@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+Farmer Register
+{% endblock title %}
+
+{%block content%}
+<div class="register-container">
+    <div class="form-wrap">
+        <h2> Farmer Registration </h2>
+<form method ="POST" class="login-form">
+    {% csrf_token%}
+    {{form.as_p}}
+    <button type ="submit" class="register-btn">Register</button>
+</form>
+
+
+{% comment %} <a href="{% url 'base:signup' %}">SignUp</a> {% endcomment %}
+
+
+</div>
+</div>
+{% endblock content%}
