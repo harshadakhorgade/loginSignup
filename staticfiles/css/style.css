@@ -1,0 +1,344 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #E4F1EE;
+    display: block; /* Change to block */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Login Page Styles */
+.login-container, .register-container {
+    background-color: #ffffff;
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 90%; /* Ensure it doesn’t exceed viewport width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #44856D;
+}
+h1 {
+    margin-bottom: 20px;
+    color: #44856D;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+    color: #44856D;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #C1DFD5;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-container input {
+    width: calc(100% - 40px);
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.forgot-password {
+    display: block;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    color: #44856D;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.login-btn, .register-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #44856D;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.or-container {
+    margin: 20px 0;
+    color: #44856D;
+}
+
+.social-login {
+    display: flex;
+    justify-content: space-between;
+}
+
+.social-login button {
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #C1DFD5;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.google-btn, .facebook-btn {
+    background-color: #ffffff;
+}
+
+.register-links {
+    margin-top: 20px;
+    color: #44856D;
+}
+
+.register-links a {
+    display: block;
+    margin: 5px 0;
+    text-decoration: none;
+    color: #44856D;
+}
+
+/* Main Layout Styles */
+.container {
+    display: flex;
+    min-height: 100vh;
+    margin: 0; /* Remove margin-top */
+    flex-direction: row;
+}
+
+.sidebar {
+    width: 20%;
+    background-color: #579e8b;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 20px;
+}
+
+.logo img {
+    display: block;
+    margin: 0 auto;
+    width: 80%;
+}
+
+.menu {
+    list-style: none;
+    font-size: 18px;
+}
+
+.menu li {
+    margin: 20px 0;
+    cursor: pointer;
+}
+
+.logout {
+    background-color: #478272;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 12px;
+    color: black;
+}
+
+.main-content {
+    width: 80%;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px; /* Added padding for better spacing */
+}
+
+.header h2 {
+    font-size: 24px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* Section Styles */
+.weather-section,
+.crops-section,
+.tools-section,
+.statistics-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.weather-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.weather-data p {
+    margin: 5px 0;
+}
+
+.weather-data img {
+    width: 40px;
+    height: 40px;
+}
+
+.crops-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.crop {
+    background-color: #e0f2e9;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.crop img {
+    display: block;
+    margin: 0 auto;
+    width: 50px;
+    height: 50px;
+}
+
+.tools-section {
+    display: flex;
+    justify-content: space-around;
+}
+
+.tool {
+    background-color: #e6f7f2;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    width: 30%;
+}
+
+.tool img {
+    width: 40px;
+    height: 40px;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+.statistics-section .stats {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.stats p {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.statistics-section img {
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+}
+
+ul.menu li {
+    list-style: none; /* Remove bullets */
+    margin: 5px 0; /* Add some margin between items */
+}
+
+ul.menu li a {
+    display: block; /* Make the link a block element */
+    padding: 10px 15px; /* Add padding for better spacing */
+    text-decoration: none; /* Remove underline */
+    color: #333; /* Set text color */
+}
+
+ul.menu li a:hover {
+    background-color: #f0f0f0; /* Highlight on hover */
+}
+
+.sidebar .logout {
+    display: inline-block;
+    background-color: #023707; /* Button background color */
+    color: white; /* Button text color */
+    padding: 10px 20px; /* Button padding */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    text-align: center; /* Center the text */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size */
+}
+
+.sidebar .logout a {
+    text-decoration: none; /* Remove underline */
+    color: white; /* Make sure the link text is white */
+    display: block; /* Make the link fill the button area */
+}
+
+.sidebar .logout:hover {
+    background-color: #03b42f; /* Darker background on hover */
+}
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack sidebar and main content vertically */
+    }
+    
+    .sidebar {
+        width: 100%; /* Full width on smaller screens */
+        order: 2; /* Sidebar comes after the main content */
+    }
+
+    .main-content {
+        width: 100%; /* Full width on smaller screens */
+        order: 1; /* Main content comes first */
+    }
+}

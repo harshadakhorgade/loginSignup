@@ -1,22 +1,22 @@
-# Ignore virtual environment
-venv/
-env/
+# # Ignore virtual environment
+# venv/
+# env/
 
-# Ignore database files
-db.sqlite3
+# # Ignore database files
+# db.sqlite3
 
-# Ignore static and media files
-staticfiles/
-media/
+# # Ignore static and media files
+# staticfiles/
+# media/
 
-# Ignore compiled Python files
-*.pyc
-__pycache__/
+# # Ignore compiled Python files
+# *.pyc
+# __pycache__/
 
-# Ignore deployment files
-gunicorn/
-nginx/
-scripts/
+# # Ignore deployment files
+# gunicorn/
+# nginx/
+# scripts/
 
-# Ignore shell script files
-*.sh
+# # Ignore shell script files
+# *.sh
