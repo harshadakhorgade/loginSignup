@@ -11,6 +11,6 @@ ExecStart=/home/ubuntu/loginSignup/venv/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
           --bind unix:/run/gunicorn.sock \
-          base.wsgi:application
+          loginSignup.wsgi:application
 [Install]
 WantedBy=multi-user.target
