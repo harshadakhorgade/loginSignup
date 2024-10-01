@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %} Farmer Home {% endblock title %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <aside class="sidebar">
+        <div class="logo">
+            <img src="{% static 'img/vgs.png' %}" alt="Virtuous Logo"> <!-- Logo Image -->
+        </div>
+        <ul class="menu">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="{% url 'base:farmer_profile' %}">Your Profile</a></li>
+            <li><a href="{% url 'base:crop_form' %}">Your Farm</a></li>
+            <li><a href="#">Products</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="{% url 'base:password_change' %}">Change Password</a></li>
+        </ul>
+        <button class="logout"><a href="{% url 'base:login' %}">Logout</a></button>
+        <p class="copyright">2023 Copyright</p>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h2>Good Morning, {{ user.username }}</h2>
+            <p id="current-date" class="date"></p> <!-- Date display moved to the dashboard -->
+        </header>
+
+        <!-- Weather Section -->
+        <section class="weather-section">
+            <div class="weather-app">
+                <div class="weather-frame">
+                    <img src="{% static 'css/clouds.png' %}" alt="Weather Icon" class="weather-icon">
+                    <div class="current-weather">
+                        <div class="temp">
+                            <span class="current-temp">--</span>°C
+                        </div>
+                        <div class="weather-info">
+                            <div class="condition">--</div>
+                            <div class="location">Detecting location...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crops Section -->
+        <section class="crops-section">
+            <h3>Your Crops</h3>
+            <div class="crops-grid">
+                <div class="crop">
+                    <img src="{% static 'img/onion-icon.png' %}" alt="Onion">
+                    <p>Onion</p>
+                </div>
+                <div class="crop">
+                    <img src="{% static 'img/chilli-icon.png' %}" alt="Chilli">
+                    <p>Chilli</p>
+                </div>
+                <div class="crop">
+                    <img src="{% static 'img/turmeric-icon.png' %}" alt="Turmeric">
+                    <p>Turmeric</p>
+                </div>
+                <div class="crop">
+                    <img src="{% static 'img/cumin-icon.jpg' %}" alt="Cumin">
+                    <p>Cumin</p>
+                </div>
+                <div class="crop">
+                    <img src="{% static 'img/garlic-icon.png' %}" alt="Garlic">
+                    <p>Garlic</p>
+                </div>
+                <div class="crop">
+                    <img src="{% static 'img/chikoo-icon.png' %}" alt="Chickoo">
+                    <p>Chickoo</p>
+                </div>
+                <div class="crop">
+                    <img src="{% static 'img/spices-icon.png' %}" alt="Spices">
+                    <p>Spices</p>
+                </div>
+                <div class="crop">
+                    <img src="{% static 'img/cashew-icon.png' %}" alt="Cashew">
+                    <p>Cashew</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="tools-section">
+            <div class="tool">
+                <a href="http://127.0.0.1:5000/">
+                    <img src="{% static 'img/plant-disease-icon.jpg' %}" alt="Plant Disease Detection">
+                    <p>Plant Disease Detection</p>
+                </a>
+            </div>
+            <div class="tool">
+                <img src="{% static 'img/fertilizer-icon.png' %}" alt="Fertilizer Calculator">
+                <p>Fertilizer Calculator</p>
+            </div>
+            <div class="tool">
+                <img src="{% static 'img/ph-checker-icon.png' %}" alt="pH Level Checker">
+                <p>pH Level Checker</p>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- JavaScript for Date Display and Weather -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dateElement = document.getElementById('current-date');
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = today.toLocaleDateString(undefined, options);
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(fetchWeather, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    });
+
+    const apiKey = 'dee6692cef3c7f71000673adb67b406c';
+
+    function fetchWeather(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                displayWeather(data);
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+            });
+    }
+
+    function displayWeather(data) {
+        const condition = data.weather[0].main.toLowerCase();
+        document.querySelector('.current-temp').textContent = Math.round(data.main.temp);
+        document.querySelector('.condition').textContent = data.weather[0].description;
+        document.querySelector('.location').textContent = `${data.name}, ${data.sys.country}`;
+
+        const weatherFrame = document.querySelector('.weather-frame');
+        const weatherIcon = document.querySelector('.weather-icon');
+
+        if (condition.includes('rain')) {
+            weatherFrame.style.backgroundImage = "url('" + "{% static 'css/rain-icon.png' %}" + "')";
+            weatherIcon.src = "{% static 'css/rain-icon.png' %}";
+        } else if (condition.includes('cloud')) {
+            weatherFrame.style.backgroundImage = "url('" + "{% static 'css/cloudy.png' %}" + "')";
+            weatherIcon.src = "{% static 'css/clouds.png' %}";
+        } else {
+            weatherFrame.style.backgroundImage = "url('" + "{% static 'css/sunny.png' %}" + "')";
+            weatherIcon.src = "{% static 'css/sun-icon.png' %}";
+        }
+    }
+
+    function showError(error) {
+        document.querySelector('.location').textContent = "Unable to retrieve location.";
+        alert("Error getting location: " + error.message);
+    }
+</script>
+
+<!-- CSS -->
+<style>
+    /* General styles */
+    body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #e0f7fa;
+    }
+
+    .container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: #2e7d32;
+        color: #fff;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .sidebar .logo img {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .sidebar .menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar .menu li {
+        margin: 15px 0;
+    }
+
+    .sidebar .menu li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    .sidebar .logout {
+        margin-top: 20px;
+        background-color: #c62828;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .sidebar .logout a {
+        color: #fff;
+        text-decoration: none;
+        display: block;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 40px;
+        box-sizing: border-box;
+        background-color: #f1f8e9;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header h2 {
+        margin: 0;
+        font-size: 32px;
+        color: #2e7d32;
+    }
+
+    .header .date {
+        font-size: 18px;
+        color: #2e7d32;
+    }
+
+    /* Weather Section Styles */
+    .weather-section {
+        margin-top: 20px;
+    }
+
+    .weather-app {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #ffffff;
+    }
+
+    .weather-frame {
+        background-color: #c9d5e6;
+        padding: 15px;
+        border-radius: 8px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+    }
+
+    .weather-icon {
+        width: 80px;
+        margin-bottom: 15px;
+    }
+
+    .temp {
+        font-size: 36px;
+        font-weight: bold;
+        color: #0e0f0f;
+    }
+
+    .weather-info .condition {
+        font-size: 20px;
+        color: #0a0b0c;
+        text-transform: capitalize;
+    }
+
+    .weather-info .location {
+        font-size: 16px;
+        color: #111213;
+        margin-top: 5px;
+    }
+
+    /* Crops Section Styles */
+    .crops-section {
+        margin-top: 40px;
+    }
+
+    .crops-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .crop {
+        text-align: center;
+        flex: 1 0 21%;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .crop img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .crop p {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #2e7d32;
+    }
+
+    /* Tools Section Styles */
+    .tools-section {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .tool {
+        text-align: center;
+        flex: 1;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .tool img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .tool p {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #2e7d32;
+    }
+
+    .tools-section .tool a {
+        text-decoration: none;
+        color: #2e7d32;
+    }
+</style>
+
+{% endblock content %}

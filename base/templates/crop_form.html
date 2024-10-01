@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Crop Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+            color: #333;
+        }
+        form {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s ease;
+        }
+        form:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+        .field {
+            margin-bottom: 15px;
+        }
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        .field input, .field select, .field textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 8px 12px;
+            margin-top: 10px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+        .crop-list {
+            margin-top: 20px;
+        }
+        .crop-item {
+            position: relative;
+            background: #ffffff;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        .crop-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .crop-item span {
+            font-weight: 500;
+            color: #333;
+        }
+        .crop-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .crop-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .crop_image {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+        .delete-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>{{ form.instance.id|yesno:"Edit Crop,Add Crop" }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{{ form.instance.id|yesno:"Save Crop,Add Crop" }}</button>
+    </form>
+
+    <h2>My Crops</h2>
+    <div class="crop-list">
+        {% for crop in crops %}
+        <div class="crop-item">
+            <form method="POST" action="{% url 'base:delete_crop' crop.id %}">
+                {% csrf_token %}
+                <button type="submit" class="delete-button">Delete</button>
+            </form>
+            <div class="crop-details">
+                <span><strong>Crop Type:</strong> {{ crop.crop_type }}</span>
+                <span><strong>Variety:</strong> {{ crop.variety }}</span>
+                <span><strong>Planting Date:</strong> {{ crop.planting_date }}</span>
+                <span><strong>Expected Harvest Date:</strong> {{ crop.expected_harvest_date }}</span>
+                <span><strong>Field Number:</strong> {{ crop.field_number }}</span>
+                <span><strong>Fertilizer Usage:</strong> {{ crop.fertilizer_usage }}</span>
+                <span><strong>Condition:</strong> {{ crop.condition }}</span>
+                <span><strong>Problems:</strong> {{ crop.problems }}</span>
+                <span><strong>Irrigation Type:</strong> {{ crop.get_irrigation_type_display }}</span>
+                <span><strong>Season:</strong> {{ crop.get_season_display }}</span>
+                <span><strong>Land Type:</strong> {{ crop.get_land_type_display }}</span>
+                <span><strong>Crop Category:</strong> {{ crop.get_crop_category_display }}</span>
+                <span><strong>Farmer Type:</strong> {{ crop.get_farmer_type_display }}</span>
+                <span><strong>Area in Acres:</strong> {{ crop.area_in_acres }}</span>
+
+                {% if crop.photo_crop_condition %}
+                <div class="crop-image">
+                    <img src="{{ crop.photo_crop_condition.url }}" alt="Crop Image">
+                </div>
+                {% else %}
+                <div class="crop_image">
+                    <p>No Photo</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p>No crops added yet.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

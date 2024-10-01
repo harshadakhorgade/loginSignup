@@ -1,0 +1,28 @@
+{% extends "base.html" %} 
+{% block title %}
+Login
+{% endblock title %}
+
+{%block content%}
+
+
+ <div class="login-container">
+        <h2>Sign in to your Account</h2>
+        <form class="login-form" method="POST">
+        {% csrf_token%}
+        {{form}}
+            
+            <a href="#" class="forgot-password">Forgot Password?</a>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <div class="or-container">
+            <span>Or login With</span>
+        </div>
+        <div class="register-links">
+            <a href="{% url 'base:farmer_signup' %}" class="register-farmer">Register as a Farmer</a>
+            <a href="{% url 'base:coordinator_signup' %}" class="register-coordinator">Register as a Coordinator</a>
+        </div>
+</div>
+    <script src="script.js"></script>
+{% endblock content%}
+
