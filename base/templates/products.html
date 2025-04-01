@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %} Products {% endblock %}
+
+{% block content %}
+<style>
+    .products { display: flex; flex-wrap: wrap; justify-content: space-between; }
+    .product { flex: 0 0 22%; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden; text-align: center; }
+    .product img { width: 100%; height: auto; max-height: 200px; object-fit: cover; }
+    .product h2 { font-size: 1.2em; margin: 10px 0; }
+    .product button { padding: 10px 20px; margin: 10px 5px; background-color: #007bff; border: none; color: white; cursor: pointer; border-radius: 5px; }
+    .product button:hover { background-color: #0056b3; }
+</style>
+
+<h1>Our Products</h1>
+<div class="products">
+    {% for product in products %}
+        <div class="product">
+            <a href="{% url 'base:product_detail' product.id %}">  <!-- Fixed URL -->
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">  <!-- Fixed Image Field -->
+            </a>
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <p>Price: ${{ product.price }}</p>
+            <button class="add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
+        </div>
+    {% endfor %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.add-to-cart').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).data('product-id');
+
+            $.ajax({
+                url: "{% url 'base:add_to_cart' 0 %}".replace('0', productId),
+                method: "POST",
+                data: { 'csrfmiddlewaretoken': '{{ csrf_token }}' },
+                success: function (data) {
+                    if (data.success) {
+                        alert(data.message);
+                        updateCartCount(data.cart_item_count);
+                    } else {
+                        alert("Failed to add product to cart.");
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while adding the product to the cart.");
+                }
+            });
+        });
+    });
+
+    function updateCartCount(count) {
+        $('.cart-count-badge').text(count);
+    }
+</script>
+
+{% endblock %}

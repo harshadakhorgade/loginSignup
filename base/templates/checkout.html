@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock title %}
+
+{% block content %}
+<div class="container my-5">
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="alert alert-info text-center">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <!-- Left Section: Order Summary -->
+        <div class="col-lg-6">
+            <section class="order-summary">
+                <h2 class="text-center text-primary mb-4">Order Summary</h2>
+                <div class="card shadow-lg border-0 rounded-4 p-4">
+                    {% for item in cart_items %}
+                        <div class="card border-0 rounded-3 mb-3 p-3 shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded-3" width="80" height="80">
+                                </div>
+                                <div>
+                                    <h5 class="card-title m-0">{{ item.product.name }}</h5>
+                                    <p class="text-muted">Quantity: <strong>{{ item.quantity }}</strong></p>
+                                    <p class="text-success m-0">Price: ₹{{ item.product.price }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-end mt-4">
+                        <p class="fw-bold fs-5">Total + Shipping (₹40) = ₹{{ total_price }}</p>
+                        <small class="text-muted d-block">By placing this order, you agree to our terms and conditions.</small>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Section: Shipping Address and Payment -->
+        <div class="col-lg-6">
+            <section class="shipping-payment">
+                <h2 class="text-center text-primary mb-4">Shipping Address & Payment</h2>
+                <div class="card shadow-lg border-0 rounded-4 p-4">
+                    <h4 class="text-primary mb-4">Select Shipping Address</h4>
+                    <form method="post" id="checkoutForm">
+                        {% csrf_token %}
+                        {% for ad in addresses %}
+                            <div class="card border-0 shadow-sm rounded-3 mb-3 p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="m-0">{{ ad.name }}</h6>
+                                        <p class="text-muted mb-1">Mobile: <strong>{{ ad.mobile }}</strong></p>
+                                        <p class="text-muted">{{ ad.locality }}, {{ ad.city }}, {{ ad.state }} - {{ ad.zipcode }}</p>
+                                    </div>
+                                    <div class="form-check ms-3">
+                                        <input class="form-check-input" type="radio" name="custid" id="custadd{{ forloop.counter }}" value="{{ ad.id }}">
+                                        <label class="form-check-label" for="custadd{{ forloop.counter }}">Select</label>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="form-group mb-4">
+                            <label for="totalAmount" class="form-label fw-bold">Total Amount</label>
+                            <input type="number" class="form-control" name="totalAmount" value="{{ total_price }}" readonly>
+                        </div>
+
+                        <!-- Razorpay Payment Button -->
+                        <div class="text-end">
+                            <button id="rzp-button1" type="button" class="btn btn-primary mt-3 px-5 fw-bold shadow-lg rounded-pill">Proceed to Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+{% block payment-gateway %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "rzp_test_mIRJzKa1zcteKU",
+        "amount": "{{ razor_amount }}",
+        "currency": "INR",
+        "name": "Your Store Name",
+        "description": "Order Payment",
+        "order_id": "{{ order_id }}",
+        "handler": function(response) {
+            window.location.href = `/paymentdone?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&cust_id=${document.querySelector('input[name="custid"]:checked').value}`;
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function(response) {
+        alert(response.error.description);
+    });
+
+    document.getElementById('rzp-button1').onclick = function(e) {
+        rzp1.open();
+        e.preventDefault();
+    };
+</script>
+<style>
+   
+    .btn-primary {
+        transition: all 0.2s ease;
+        padding: 0.75rem 2rem;
+        border-radius: 30px;
+        background-color: #3399cc;
+        color: #fff;
+    }
+    .btn-primary:hover {
+        background-color: #287a9f;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-control {
+        padding: 1.1rem 1.25rem;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+    .form-check-label {
+        margin-left: 10px;
+        font-weight: 500;
+    }
+
+    .text-muted {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock payment-gateway %}
+{% endblock content %}

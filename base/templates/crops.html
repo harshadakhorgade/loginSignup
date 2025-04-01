@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ crop.name }} Details{% endblock title %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h2 class="mb-4">{{ crop.name }}</h2>
+            <img src="{% static crop.image %}" alt="{{ crop.name }}" class="img-fluid mb-4" style="max-width: 300px; height: auto;">
+
+            <div class="crop-details">
+                <h4 class="mb-3">Brief Information</h4>
+                <p><strong>Description:</strong> {{ crop.description }}</p>
+                <p><strong>Ideal Climate:</strong> {{ crop.climate }}</p>
+                <p><strong>Best Growing Season:</strong> {{ crop.season }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Ensure container has margin-top to push it down from the top */
+.container.mt-5 {
+    margin-top: 5rem; /* Adjust as needed */
+}
+
+/* Center text in content block */
+.text-center {
+    text-align: center;
+}
+
+/* Style for crop details section */
+.crop-details {
+    background-color: #f8f9fa; /* Light background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Style for headings */
+h2 {
+    color: #343a40; /* Dark color for heading */
+}
+
+h4 {
+    margin-bottom: 20px;
+    color: #6c757d; /* Slightly lighter color for subheadings */
+}
+
+/* Style for paragraphs */
+p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+</style>
+
+{% endblock content %}
+
+

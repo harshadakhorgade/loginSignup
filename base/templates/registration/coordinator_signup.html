@@ -1,17 +1,18 @@
 {% extends "base.html" %}
-
-
+{% block title %}
+Coordinator Signup
+{% endblock title %}
 
 {%block content%}
-<div class="shadow-wrap">
+<div class="register-container">
     <div class="form-wrap">
-        <h3> Coordinator Registration </h3>
+        <h2> Coordinator Registration </h2>
 <form method ="POST">
-    {% csrf_token%}
+    {% csrf_token %}
     {{form.as_p}}
-    <button type ="submit">Register</button>
+    <button type ="submit" class="register-btn">Register</button>
 </form>
-<a class="signup-link"  href="{% url 'base:login' %}">Login</a>
+
 
 {% comment %} <a href="{% url 'base:signup' %}">SignUp</a> {% endcomment %}
 

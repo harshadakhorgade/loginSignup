@@ -1,0 +1,15 @@
+<!-- templates/send_notification.html -->
+{% extends "base.html" %}
+
+{% block title %}Send Notification{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h2>Send a Notification</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send Notification</button>
+    </form>
+</div>
+{% endblock content %}

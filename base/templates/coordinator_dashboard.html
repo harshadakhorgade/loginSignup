@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Coordinator Dashboard{% endblock title %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <header class="header mb-5">
+            <h2 class="welcome-heading">Welcome, {{ user.username }}</h2>
+        </header>
+
+       
+
+{% comment %} weather section {% endcomment %}
+
+        <section class="weather-section">
+            <h3>Today's Weather</h3>
+            <div class="weather-info">
+                <div class="date-location">
+                    <p>15 August 2024</p>
+                    <p>Yavatmal, Maharashtra</p>
+                </div>
+                <div class="weather-data">
+                    <p class="temperature">29°C</p>
+                    <p class="humidity">Humidity: 83%</p>
+                    <p class="condition">Cloudy</p>
+                    <img src="{% static 'img/image 156.png' %}" alt="Cloudy">
+                    <p class="advice">Today is a good day to apply pesticides.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="summary-section mb-5">
+            <h3 class="summary-title">Dashboard Summary</h3>
+            <p class="summary-text">Here you can view and manage all the activities related to farming operations...</p>
+        </section>
+{% comment %} farmer table {% endcomment %}
+        <section class="farmers-section">
+            <h3 class="farmers-title">Farmers in Your Area</h3>
+            <div class="table-container">
+                <table class="farmers-table">
+                    <thead>
+                        <tr>
+                            <th>Farmer Name</th>
+                            <th>Area</th>
+                            <th>Crops Grown</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if farmers %}
+                            {% for farmer in farmers %}
+                            <tr>
+                                <td>{{ farmer.first_name }} {{ farmer.last_name }}</td>
+                                <td>{{ farmer.village }}, {{ farmer.district }}, {{ farmer.taluka }}</td>
+                                <td>
+                                    <ul class="crops-list">
+                                        {% for crop in crops %}
+                                            {% if crop.profile == farmer.profile %}
+                                            <li class="crop-item">
+                                                <span class="crop-type">{{ crop.crop_type }} ({{ crop.variety }})</span>
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if not crops %}
+                                            <li class="no-crops">No crops available for this farmer</li>
+                                        {% endif %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="no-farmers">No farmers found in your area</td>
+                            </tr>
+                        {% endif %}
+                        {% if error %}
+                            <tr>
+                                <td colspan="3" class="error-message">{{ error }}</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+      
+<!-- Inline CSS -->
+<style>
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+/* Header Styles */
+.header {
+    text-align: center;
+}
+
+.welcome-heading {
+    font-size: 2.5rem;
+    color: #2c3e50;
+}
+
+/* Summary Section Styles */
+.summary-section {
+    padding: 20px;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summary-title {
+    font-size: 1.75rem;
+    color: #2980b9;
+}
+
+.summary-text {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Farmers Section Styles */
+.farmers-section {
+    padding: 20px;
+}
+
+.farmers-title {
+    font-size: 1.75rem;
+    color: #27ae60;
+    margin-bottom: 15px;
+}
+
+/* Table Styles */
+.table-container {
+    overflow-x: auto;
+}
+
+.farmers-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.farmers-table th,
+.farmers-table td {
+    padding: 12px;
+    text-align: left;
+}
+
+.farmers-table thead {
+    background-color: #34495e;
+    color: #fff;
+}
+
+.farmers-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Hover Effect for Table Row */
+.farmers-table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+.farmer-name {
+    font-weight: bold;
+}
+
+.farmer-area {
+    color: #7f8c8d;
+}
+
+.crops-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.crop-item {
+    margin-bottom: 5px;
+}
+
+.crop-type {
+    font-weight: bold;
+}
+
+.no-crops {
+    color: #e74c3c;
+}
+
+.no-farmers {
+    text-align: center;
+    color: #e74c3c;
+    font-style: italic;
+}
+</style>
+
+{% endblock content %}

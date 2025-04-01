@@ -1,6 +1,16 @@
 from django.contrib import admin
-from .models import Profile, FarmerProfile,CoordinatorProfile,Crop
+from .models import Profile, FarmerProfile,CoordinatorProfile,Crop,Product,Notification
 from django.utils.html import format_html
+
+from .models import Product, ProductImage
+
+
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'message', 'timestamp')  # Ensure timestamp is a field in your Notification model
+
+admin.site.register(Notification, NotificationAdmin)
+
+
 
 class CropInline(admin.TabularInline):
     model = Crop
@@ -16,13 +26,10 @@ class ProfileAdmin(admin.ModelAdmin):
 class FarmerProfileAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'username','mobile_number', 'email','village', 'district', 'state')
     search_fields = ('first_name', 'last_name', 'username','mobile_number','email','village', 'district', 'state')
-    
 
 class CoordinatorProfileAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'username','mobile_number', 'email','village', 'district', 'state')
     search_fields = ('first_name', 'last_name', 'username','mobile_number','email','village', 'district', 'state')
-    
-
 
 class CropAdmin(admin.ModelAdmin):
     list_display = ('username','crop_type', 'variety', 'planting_date', 'expected_harvest_date', 'field_number','fertilizer_usage','problems','condition','irrigation_type', 'season', 'area_in_acres','photo_crop_condition','land_type', 'crop_category', 'farmer_type' ) # Fields to display in admin list view
@@ -38,7 +45,20 @@ class CropAdmin(admin.ModelAdmin):
 
 
 
+
+
+class ProductImageInline(admin.TabularInline):  # or use StackedInline
+    model = ProductImage
+    extra = 3  # Allows adding 3 additional images by default (change as needed)
+
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price')  # Display these fields in the admin list
+    inlines = [ProductImageInline]  # Add multiple images in the Product admin page
+
+admin.site.register(Product, ProductAdmin)
+
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(FarmerProfile, FarmerProfileAdmin)
 admin.site.register(CoordinatorProfile, CoordinatorProfileAdmin)
 admin.site.register(Crop, CropAdmin)
+

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0px;
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        flex-direction: row-reverse; /* Reverses the order of add button and crop list */
+    }
+
+    .crop-list {
+        width: 70%;
+        margin-left: 20px;
+    }
+
+    .crop-card {
+        background-color: #fff;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .crop-card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .delete-button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .delete-button:hover {
+        background-color: #c82333;
+    }
+
+    .crop-image img {
+        max-width: 100px;
+        height: auto;
+        border-radius: 6px;
+    }
+
+    .add-crop {
+        width: 20%;
+        text-align: left; /* Aligns the button to the left */
+        margin-bottom: 20px; /* Adds space below the button */
+    }
+
+    .add-crop button {
+        width: 100%;
+        padding: 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: background-color 0.3s ease;
+    }
+
+    .add-crop button:hover {
+        background-color: #218838;
+    }
+
+    .no-crops-message {
+        background-color: #f0f4f8;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        font-style: italic;
+        color: #777;
+    }
+</style>
+
+
+<h2>My Farm</h2>
+
+<div class="container">
+    <!-- Left side: Add Crop button -->
+    <div class="add-crop">
+        <form method="get" action="{% url 'base:crop_form' %}">
+            {% comment %} {% csrf_token %} {% endcomment %}
+            <button type="submit">Add Crop</button>
+        </form>
+    </div>
+
+    <!-- Right side: Crop list -->
+    <div class="crop-list">
+        {% if crops %}
+            {% for crop in crops %}
+            <div class="crop-card">
+                <div class="crop-item">
+                    <form method="POST" action="{% url 'base:delete_crop' crop.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button">Delete</button>
+                    </form>
+                    <div class="crop-details">
+                        <span><strong>Crop Type:</strong> {{ crop.crop_type }}</span><br>
+                        <span><strong>Variety:</strong> {{ crop.variety }}</span><br>
+                        <span><strong>Planting Date:</strong> {{ crop.planting_date }}</span><br>
+                        <span><strong>Expected Harvest Date:</strong> {{ crop.expected_harvest_date }}</span><br>
+                        <span><strong>Field Number:</strong> {{ crop.field_number }}</span><br>
+                        <span><strong>Fertilizer Usage:</strong> {{ crop.fertilizer_usage }}</span><br>
+                        <span><strong>Condition:</strong> {{ crop.condition }}</span><br>
+                        <span><strong>Problems:</strong> {{ crop.problems }}</span><br>
+                        <span><strong>Irrigation Type:</strong> {{ crop.get_irrigation_type_display }}</span><br>
+                        <span><strong>Season:</strong> {{ crop.get_season_display }}</span><br>
+                        <span><strong>Land Type:</strong> {{ crop.get_land_type_display }}</span><br>
+                        <span><strong>Crop Category:</strong> {{ crop.get_crop_category_display }}</span><br>
+                        <span><strong>Farmer Type:</strong> {{ crop.get_farmer_type_display }}</span><br>
+                        <span><strong>Area in Acres:</strong> {{ crop.area_in_acres }}</span><br>
+
+                        {% if crop.photo_crop_condition %}
+                        <div class="crop-image">
+                            <img src="{{ crop.photo_crop_condition.url }}" alt="Crop Image">
+                        </div>
+                        {% else %}
+                        <div class="crop-image">
+                            <p>No Photo</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-crops-message">
+                <p>No crops added yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

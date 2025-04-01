@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Your Notifications{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h1>Your Notifications</h1>
+    <ul class="notification-list">
+        {% for notification in notifications %}
+        <li class="notification-item {% if notification.is_read %}read{% endif %}" data-id="{{ notification.id }}">
+
+                <div class="notification-header">
+                    <strong>{{ notification.title }}</strong>
+                    <div class="notification-meta">
+                        <small class="notification-timestamp">{{ notification.timestamp|date:"Y-m-d h:i A" }}</small>
+
+                        <!-- Three Dots Menu -->
+                        <div class="dropdown" style="display: inline-block; position: relative;">
+                            <button class="dots-button" onclick="toggleDropdown(event)">&#8230;</button>
+                            <div class="dropdown-content" style="display: none;">
+                                <form action="{% url 'base:delete_notification' notification.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="custom-delete-btn">
+                                        <i class="fas fa-trash-alt icon"></i> Delete
+                                    </button>
+                                </form>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notification-message">
+                    {{ notification.message }}
+                </div>
+            </li>
+        {% empty %}
+            <li>No notifications.</li>
+        {% endfor %}
+    </ul>
+    
+</div>
+
+<style>
+   
+    /* Container style for the notification list */
+    .notification-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        width: 100%; /* Take the full width of the container */
+        background-color: #f4f4f4;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+ 
+ 
+    /* Style for each notification item */
+    .notification-item {
+        padding: 25px 40px;
+        background-color: #e6f7ff;
+        border-bottom: 1px solid #e6e6e6;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+        display: flex;
+        flex-direction: column;
+    } 
+    
+    /* Style for read notifications */
+.notification-item.read {
+    background-color: #ffffff; /* White for read notifications */
+    color: #555; /* Slightly dimmed text color */
+    }
+
+    .notification-item:last-child {
+        border-bottom: none; /* Remove border for the last item */
+    }
+
+    .notification-item:hover {
+        background-color: #f0f8ff;
+        transform: scale(1.02); /* Slight zoom effect */
+    }
+
+    /* Notification header containing the title */
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    /* Title of the notification */
+    .notification-title {
+        font-size: 1em;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        flex-grow: 1;
+        line-height: 1.4;
+    }
+
+    /* Timestamp for the notification */
+    .notification-timestamp {
+        font-size: 0.85em;
+        color: #888;
+        margin-left: 10px;
+    }
+
+    /* Notification message style */
+    .notification-message {
+        margin-top: 10px;
+        color: #555;
+        font-size: 0.9em;
+        line-height: 1.4;
+        display: none; /* Initially hidden */
+    }
+
+   
+    /* Style for new notifications */
+    .notification-item.new::before {
+        content: "";
+        display: block;
+        width: 4px;
+        height: 100%;
+        background-color: #007bff;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+
+    /* Wrapper to make the entire notification a card */
+    .notification-item-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Dropdown menu styles */
+    .dropdown-content {
+        display: none; /* Hidden by default */
+        position: absolute;
+        right: 0; /* Align to the right */
+        background-color: #f9f9f9; /* Background color for the dropdown */
+        min-width: 90px; /* Minimum width */
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Shadow */
+        z-index: 1; /* Display on top */
+    }
+
+    .dropdown-content a {
+        color: black; /* Text color */
+        padding: 12px 16px; /* Padding */
+        text-decoration: none; /* No underline */
+        display: block; /* Make the link block-level */
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1; /* Change background on hover */
+    }
+
+    .dots-button {
+        background: none;
+        border: none;
+        color: #333; /* Color for the three dots */
+        cursor: pointer; /* Pointer cursor */
+        font-size: 16px; /* Font size */
+    }
+
+    .dots-button:focus {
+        outline: none; /* Remove outline on focus */
+    }
+
+    .custom-delete-btn {
+        background-color: transparent; /* Transparent background */
+        color: red; /* Red font color */
+        border: none; /* No border */
+        font-size: 15px; /* Font size */
+        display: flex;
+        align-items: center; /* Center icon and text vertically */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: color 0.3s; /* Transition effect */
+    }
+    
+    .custom-delete-btn:hover {
+        color: darkred; /* Darker red on hover */
+    }
+    
+    .custom-delete-btn .icon {
+        margin-right: 5px; /* Space between icon and text */
+    }
+    
+
+</style>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function updateNotificationCount() {
+        $.ajax({
+            url: "{% url 'base:unread_notifications_count' %}",
+            method: "GET",
+            success: function (data) {
+                if (data.unread_count > 0) {
+                    $('.notification-badge').text(data.unread_count).show();
+                } else {
+                    $('.notification-badge').hide();
+                }
+            }
+        });
+    }
+    $(document).ready(function () {
+        updateNotificationCount();
+        setInterval(updateNotificationCount, 30000); // Update every 30 seconds
+    
+        // Handle clicking on a notification to mark it as read
+        $('.notification-item').on('click', function () {
+            const notificationId = $(this).data('id');
+            const message = $(this).find('.notification-message');
+            const notificationItem = $(this);
+    
+            // Toggle visibility of the message
+            message.toggle();
+    
+            // If the notification is unread, mark it as read
+            if (!notificationItem.hasClass('read')) {
+                $.ajax({
+                    url: "{% url 'base:mark_notification_read' 0 %}".replace('0', notificationId),
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Change the notification background color to white
+                            notificationItem.addClass('read');
+                            updateNotificationCount(); // Update the count after marking as read
+                        }
+                    }
+                });
+            }
+        });
+    });
+    
+    {% comment %} // Function to update the unread notification count
+    function updateNotificationCount() {
+        $.ajax({
+            url: "{% url 'base:unread_notifications_count' %}",
+            method: "GET",
+            success: function (data) {
+                if (data.unread_count > 0) {
+                    $('.notification-badge').text(data.unread_count).show();
+                } else {
+                    $('.notification-badge').hide();
+                }
+            }
+        });
+    } {% endcomment %}
+    
+
+ 
+        function toggleDropdown(event) {
+            // Prevent the click event from bubbling up
+            event.stopPropagation();
+    
+            // Close all other dropdowns
+            const dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(dropdown => {
+                dropdown.style.display = 'none';
+            });
+    
+            // Toggle the current dropdown
+            const dropdownContent = event.currentTarget.nextElementSibling; // Get the next sibling (dropdown-content)
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        }
+    
+        // Close dropdowns when clicking outside
+        window.onclick = function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(dropdown => {
+                dropdown.style.display = 'none';
+            });
+        };
+        {% comment %} function toggleDropdown(event) {
+            // Prevent the click event from bubbling up
+            event.stopPropagation();
+    
+            // Close all other dropdowns
+            const dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(dropdown => {
+                dropdown.style.display = 'none';
+            });
+    
+            // Toggle the current dropdown
+            const dropdownContent = event.currentTarget.nextElementSibling; // Get the next sibling (dropdown-content)
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        }
+    
+        // Close dropdowns when clicking outside
+        window.onclick = function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(dropdown => {
+                dropdown.style.display = 'none';
+            });
+        }; {% endcomment %}
+    
+</script>
+
+{% endblock content %}

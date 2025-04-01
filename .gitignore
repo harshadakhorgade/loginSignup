@@ -1,22 +1,7 @@
-# Ignore virtual environment
+
+# Elastic Beanstalk Files
 venv/
-env/
-
-# Ignore database files
-db.sqlite3
-
-# Ignore static and media files
-staticfiles/
-media/
-
-# Ignore compiled Python files
-*.pyc
-__pycache__/
-
-# Ignore deployment files
-# gunicorn/           # Commented out to allow this directory
-# nginx/              # Commented out to allow this directory
-# scripts/            # Commented out to allow this directory
-
-# Ignore shell script files
-*.sh
+logs - Shortcut.lnk
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

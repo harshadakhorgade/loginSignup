@@ -1,22 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}  <!-- Load the static tag library -->
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} {% endblock title %}| Virtuous  </title>
+    <title>{% block title %} {% endblock title %} | Virtuous</title>
     
-     
     <!-- Add CSS files here -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .notification-icon a i,.cart-icon a i {
+        color: white !important; /* Force the icon to be white */
+        }
+        
+        .notification-icon, .cart-icon {
+            font-size: 1.0em;
+            color: white;
+            margin-right: 20px;
+            position: relative;
+        }
+        .notification-badge, .cart-badge {
+            color: #ffffff;
+            font-size: 0.8em;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: red;
+            position: absolute;
+            top: -15px;
+            right: 9px;
+        }
+    </style>
 </head>
 <body>
     
-    <main>
-        {% block content %}
-        <!-- Main content goes here -->
-        {% endblock %}
-    </main>
+    {% if user.is_authenticated %}
+    <!-- Show navbar only if the user is authenticated -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="{% static 'img/vgs.png' %}" alt="Virtuous Logo">
+        </div>
+        <ul class="navbar-menu">
+            <li><a href="{% url 'base:home' %}">Dashboard</a></li>
+
+            <!-- Conditional links based on user role -->
+            {% if user.profile.user_type == 'Farmer' %}
+                <li><a href="{% url 'base:farmer_profile' %}">Your Profile</a></li>
+                <li><a href="{% url 'base:myfarm' %}">Your Farm</a></li>
+            {% elif user.profile.user_type == 'Coordinator' %}
+                <li><a href="{% url 'base:coordinator_profile' %}">Your Profile</a></li>
+                <li><a href="#">Manage Farms</a></li>
+                <li><a href="{% url 'base:send_notification' %}">Notifications</a></li>
+            {% endif %}
+
+            <li><a href="{% url 'base:products' %}">Products</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="{% url 'base:password_change' %}">Change Password</a></li>
+        </ul>
+
+        <!-- Notification Icon and Logout Button -->
+        <div class="navbar-right" style="display: flex; align-items: center;">
+            {% if user.profile.user_type == 'Farmer' %}
+                <!-- Notification Icon -->
+                <div class="notification-icon">
+                    <a href="{% url 'base:notifications_list' %}">
+                        <i class="fa fa-bell"></i>
+                        <span class="notification-badge" style="display: none;"></span>
+                    </a>
+                </div>
+            {% endif %}
+            <!-- Cart Icon -->
+                            <!-- Example cart icon with badge -->
+                <div class="cart-icon">
+                    <a href="{% url 'base:cart_detail' %}">
+                        <i class="fa fa-shopping-cart"></i> <!-- Font Awesome cart icon -->
+                        <span class="cart-badge" style="display: none;">0</span> <!-- This will be updated dynamically with JavaScript -->
+                    </a>
+                </div>
+
+
+            
+
+                <form action="{% url 'base:logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background-color: #ff4d4d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">
+                        Logout
+                    </button>
+                </form>
+                
+                
+        </div>
+    </nav>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <script src="{% static 'js/scripts.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Initialize counters on page load
+        updateNotificationCount();
+        updateCartCount();
+
+        // Auto-refresh counters every 30 seconds
+        setInterval(updateNotificationCount, 30000);
+        setInterval(updateCartCount, 30000);
+    });
+
+    function updateNotificationCount() {
+        $.ajax({
+            url: "{% url 'base:unread_notifications_count' %}",
+            method: "GET",
+            success: function (data) {
+                if (data.unread_count > 0) {
+                    $('.notification-badge').text(data.unread_count).show();
+                } else {
+                    $('.notification-badge').hide();
+                }
+            },
+            error: function () {
+                console.error("Failed to fetch notification count.");
+            }
+        });
+    }
+
+    function updateCartCount() {
+        $.ajax({
+            url: "{% url 'base:cart_count' %}",
+            method: "GET",
+            success: function (data) {
+                if (data.cart_count > 0) {
+                    $('.cart-badge').text(data.cart_count).show();
+                } else {
+                    $('.cart-badge').hide();  // Only hide the badge, not the icon
+                }
+            },
+            error: function () {
+                console.error("Failed to fetch cart count.");
+            }
+        });
+    }
+</script>
+
 
 </body>
 </html>

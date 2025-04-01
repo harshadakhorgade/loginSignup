@@ -9,7 +9,7 @@ Login
  <div class="login-container">
         <h2>Sign in to your Account</h2>
         <form class="login-form" method="POST">
-        {% csrf_token%}
+        {% csrf_token %}
         {{form}}
             
             <a href="#" class="forgot-password">Forgot Password?</a>
@@ -23,6 +23,6 @@ Login
             <a href="{% url 'base:coordinator_signup' %}" class="register-coordinator">Register as a Coordinator</a>
         </div>
 </div>
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
 {% endblock content%}
 

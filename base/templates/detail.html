@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} {{ product.name }} {% endblock %}
+
+{% block content %}
+<style>
+    .product-detail { text-align: center; }
+    .product-detail img { max-width: 50%; border-radius: 10px; }
+    .additional-images img { max-width: 15%; margin: 10px; border-radius: 5px; }
+</style>
+
+<h1>{{ product.name }}</h1>
+<div class="product-detail">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}">  <!-- Fixed Image Field -->
+    <p>{{ product.description }}</p>
+    <p>Price: ${{ product.price }}</p>
+    <button class="add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
+</div>
+
+<h2>More Images</h2>
+<div class="additional-images">
+    {% for image in images %}
+        <img src="{{ image.image.url }}" alt="{{ product.name }}">
+    {% endfor %}
+</div>
+
+{% endblock %}

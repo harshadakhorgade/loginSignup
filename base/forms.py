@@ -1,12 +1,26 @@
 from django.contrib.auth.forms import UserCreationForm , PasswordChangeForm
 from django import forms
 from django.contrib.auth.models import User
-from .models import Profile, FarmerProfile,CoordinatorProfile,Crop
+from .models import Profile, FarmerProfile,CoordinatorProfile,Crop,Notification
 from .models import Crop
 from django.core.exceptions import ValidationError
 from datetime import date
 
 
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=150, required=True)
+    password = forms.CharField(widget=forms.PasswordInput, required=True)
+
+
+
+class NotificationForm(forms.ModelForm):
+    class Meta:
+        model = Notification
+        fields = ['title', 'message']  # Adjust fields according to your model
+
+
+        
 class FarmerSignUpForm(UserCreationForm):
     class Meta:
         model = User
@@ -39,17 +53,7 @@ class FarmerSignUpForm(UserCreationForm):
 class FarmerProfileForm(forms.ModelForm):
     class Meta:
         model = FarmerProfile
-        fields = ['first_name', 'last_name', 'username', 'mobile_number', 'date_of_birth', 'email', 'village', 'district', 'taluka', 'state']
-        widgets = {
-            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'id': 'date_of_birth'}),
-        }
-    
-    def clean_date_of_birth(self):
-        date_of_birth = self.cleaned_data.get('date_of_birth')
-        if date_of_birth and (date_of_birth.year >= date.today().year):
-            raise ValidationError('The birth date must be before the current year.')
-        return date_of_birth
-        
+        fields = ['first_name', 'last_name', 'username','mobile_number', 'date_of_birth', 'email','village', 'district', 'taluka', 'state']
 
 
 class CoordinatorSignUpForm(UserCreationForm):
@@ -81,19 +85,15 @@ class CoordinatorSignUpForm(UserCreationForm):
         return user
 
 
+
+
 class CoordinatorProfileForm(forms.ModelForm):
     class Meta:
-        model = FarmerProfile
-        fields = ['first_name', 'last_name', 'username', 'mobile_number', 'date_of_birth', 'email', 'village', 'district', 'taluka', 'state']
-        widgets = {
-            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'id': 'date_of_birth'}),
-        }
-    
-    def clean_date_of_birth(self):
-        date_of_birth = self.cleaned_data.get('date_of_birth')
-        if date_of_birth and (date_of_birth.year >= date.today().year):
-            raise ValidationError('The birth date must be before the current year.')
-        return date_of_birth
+        model = CoordinatorProfile
+        fields = ['first_name', 'last_name', 'username','mobile_number', 'date_of_birth', 'email','village', 'district', 'taluka', 'state']
+
+
+#password change
 
 class MyPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
@@ -145,3 +145,5 @@ class CropForm(forms.ModelForm):
             'area_in_acres': forms.NumberInput(attrs={'placeholder': 'Enter area in acres'}),
         }
         
+
+

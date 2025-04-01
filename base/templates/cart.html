@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+
+    <h1 class="cart-title">Your Cart</h1>
+
+    {% if cart.products.all %}
+        <div class="cart-container">
+            <div class="cart-items">
+                <div class="cart-card">
+                    <h3 class="cart-section-title">Your Cart</h3>
+                    <ul class="cart-product-list">
+                        {% for product in cart.products.all %}
+                            <li class="cart-product-item">
+                                <!-- Add the cart-product-image class directly to the image tag -->
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="cart-product-image">
+                                <div class="cart-product-details">
+                                    <span>{{ product.name }} - Rs. {{ product.price }}</span>
+                                    
+                                    <div class="cart-quantity-control">
+                                        <button class="minus-cart btn" pid="{{ product.id }}">-</button>
+                                        {% comment %} <input type="text" id="quantity-{{ product.id }}" value="{{ product.quantity|default:1 }}"> {% endcomment %}
+                                        {% comment %} here in above this code i set defaultvalue 1 this causing issue  {% endcomment %}
+                                        <input type="text" id="quantity-{{ product.id }}" value="{{ product.cartitem_set.first.quantity }}"readonly>
+
+                                        <button class="plus-cart btn" pid="{{ product.id }}">+</button>
+                                    </div>
+                                    <form action="{% url 'base:remove_from_cart' product.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-remove">Remove from Cart</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="cart-summary">
+                <div class="summary-card">
+                    <h3>The Total Amount</h3>
+                    <ul class="summary-details">
+                        <li>Total Price <span id="total_price">Rs. {{ total_price }}</span></li>
+                        <li>Shipping <span>Rs. 40.00</span></li>
+                        <li><strong>Total (including GST)</strong> <span id="total_price_with_shipping">Rs. {{ total_price_with_shipping }}</span></li>
+                    </ul>
+                    <div class="checkout-btn-container">
+                        <a href="{% url 'base:checkout' %}" class="checkout-btn">Place Order</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <p class="empty-cart">Your cart is empty.</p>
+            {% endif %}
+            
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Plus Cart
+            $('.plus-cart').click(function () {
+                const id = $(this).attr("pid").toString();
+                const quantityField = $("#quantity-" + id);
+        
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'base:plus_cart' %}",
+                    data: { prod_id: id },
+                    success: function (data) {
+                        quantityField.val(data.quantity);
+                        $("#total_price").text("Rs. " + data.total_price); // Update total price
+                        $("#total_price_with_shipping").text("Rs. " + data.total_price_with_shipping); // Update total with shipping
+                    },
+                    error: function (error) {
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+        
+            // Minus Cart
+            $('.minus-cart').click(function () {
+                const id = $(this).attr("pid").toString();
+                const quantityField = $("#quantity-" + id);
+        
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'base:minus_cart' %}",
+                    data: { prod_id: id },
+                    success: function (data) {
+                        if (data.quantity === 0) {
+                            location.reload(); // Reload the page if the item is removed
+                        } else {
+                            quantityField.val(data.quantity);
+                            $("#total_price").text("Rs. " + data.total_price); // Update total price
+                            $("#total_price_with_shipping").text("Rs. " + data.total_price_with_shipping); // Update total with shipping
+                        }
+                    },
+                    error: function (error) {
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+        });
+        
+    </script>
+            
+<style>
+    /* Page Title */
+    .cart-title {
+        text-align: center;
+        font-size: 2em;
+        margin: 20px 0;
+        color: #333;
+    }
+
+    /* Cart Layout */
+    .cart-container {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        gap: 20px;
+    }
+
+    /* Cart Items and Summary Styles */
+    .cart-items, .cart-summary {
+        flex: 1;
+    }
+    .cart-card, .summary-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Product Item Styles */
+    .cart-section-title {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    .cart-product-list {
+        list-style: none;
+        padding: 0;
+    }
+    .cart-product-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 10px;
+    }
+
+    /* Image Card Effect */
+    .cart-product-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-right: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for card effect */
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .cart-product-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+    }
+
+    /* Product Details and Quantity Controls */
+    .cart-product-details {
+        flex-grow: 1;
+    }
+    .cart-quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .cart-quantity {
+        
+        padding: 5px 10px;
+        background: #e9ecef;
+        border-radius: 4px;
+        color: #333;
+    }
+
+    /* Button Styles */
+    .btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+    .btn-remove {
+        background: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        margin-left: 10px;
+        border-radius: 4px;
+    }
+    .btn-remove:hover {
+        background: #b02a37;
+    }
+
+    /* Summary Section Styles */
+    .summary-card h3 {
+        font-size: 1.5em;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    .summary-details {
+        list-style: none;
+        padding: 0;
+        font-size: 1.1em;
+    }
+    .summary-details li {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+    }
+    .summary-total {
+        font-weight: bold;
+        color: #007bff;
+        font-size: 1.2em;
+    }
+    .checkout-btn-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .checkout-btn {
+        display: inline-block;
+        background: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 1.1em;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+    .checkout-btn:hover {
+        background: #0056b3;
+    }
+
+    /* Empty Cart Message */
+    .empty-cart {
+        text-align: center;
+        font-size: 1.3em;
+        color: #777;
+    }
+</style>
+
+
+
+{% endblock %}
+
